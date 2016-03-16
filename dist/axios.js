@@ -1,4 +1,3 @@
-/* axios v0.9.1 | (c) 2016 by Matt Zabriskie */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -142,21 +141,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	var defaultInstance = new Axios(defaults);
 	var axios = module.exports = bind(Axios.prototype.request, defaultInstance);
 	
+	// Expose properties from defaultInstance
+	axios.defaults = defaultInstance.defaults;
+	axios.interceptors = defaultInstance.interceptors;
+	
+	// Factory for creating new instances
 	axios.create = function create(defaultConfig) {
 	  return new Axios(defaultConfig);
 	};
-	
-	// Expose defaults
-	axios.defaults = defaultInstance.defaults;
 	
 	// Expose all/spread
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
 	axios.spread = __webpack_require__(16);
-	
-	// Expose interceptors
-	axios.interceptors = defaultInstance.interceptors;
 	
 	// Provide aliases for supported request methods
 	utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
@@ -675,6 +673,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  // Send the request
 	  request.send(requestData);
+	
+	  // Notify out xhr request object:
+	  // TODO: remove when proper cancelation mechanism is in place
+	  config.notifyRequest = config.notifyRequest || function notifyRequest() {};
+	  config.notifyRequest(request);
 	};
 
 

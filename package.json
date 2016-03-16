@@ -54,6 +54,7 @@
     "load-grunt-tasks": "3.4.0",
     "minimist": "1.2.0",
     "phantomjs": "1.9.19",
+    "sinon": "^1.17.3",
     "webpack": "1.12.11",
     "webpack-dev-server": "1.14.1"
   },
