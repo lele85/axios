@@ -4,7 +4,7 @@
 [![build status](https://img.shields.io/travis/mzabriskie/axios.svg?style=flat-square)](https://travis-ci.org/mzabriskie/axios)
 [![code coverage](https://img.shields.io/coveralls/mzabriskie/axios.svg?style=flat-square)](https://coveralls.io/r/mzabriskie/axios)
 [![npm downloads](https://img.shields.io/npm/dm/axios.svg?style=flat-square)](https://www.npmjs.org/package/axios)
-[![dev dependencies](https://img.shields.io/david/dev/mzabriskie/axios.svg?style=flat-square)](https://david-dm.org/mzabriskie/axios#info=devDependencies)
+[![gitter chat](https://img.shields.io/gitter/room/mzabriskie/axios.svg?style=flat-square)](https://gitter.im/mzabriskie/axios)
 
 Promise based HTTP client for the browser and node.js
 
@@ -20,9 +20,11 @@ Promise based HTTP client for the browser and node.js
 
 ## Browser Support
 
-![Chrome](https://raw.github.com/alrra/browser-logos/master/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/firefox/firefox_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/safari/safari_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/opera/opera_48x48.png) | ![IE](https://raw.github.com/alrra/browser-logos/master/internet-explorer/internet-explorer_48x48.png) |
---- | --- | --- | --- | --- |
-Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | 8+ ✔ |
+![Chrome](https://raw.github.com/alrra/browser-logos/master/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/firefox/firefox_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/safari/safari_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/opera/opera_48x48.png) | ![Edge](https://raw.github.com/alrra/browser-logos/master/edge/edge_48x48.png) | ![IE](https://raw.github.com/alrra/browser-logos/master/internet-explorer/internet-explorer_48x48.png) |
+--- | --- | --- | --- | --- | --- |
+Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | 8+ ✔ |
+
+[![Browser Matrix](https://saucelabs.com/browser-matrix/axios.svg)](https://saucelabs.com/u/axios)
 
 ## Installing
 
@@ -105,10 +107,22 @@ Requests can be made by passing the relevant config to `axios`.
 ##### axios(config)
 
 ```js
+// Send a POST request
 axios({
-  method: 'get',
-  url: '/user/12345'
+  method: 'post',
+  url: '/user/12345',
+  data: {
+    firstName: 'Fred',
+    lastName: 'Flintstone'
+  }
 });
+```
+
+##### axios(url[, config])
+
+```js
+// Sned a GET request (default method)
+axios('/user/12345');
 ```
 
 ### Request method aliases
@@ -158,7 +172,7 @@ The available instance methods are listed below. The specified config will be me
 ##### axios#put(url[, data[, config]])
 ##### axios#patch(url[, data[, config]])
 
-## Request API
+## Request Config
 
 These are the available config options for making requests. Only the `url` is required. Requests will default to `GET` if `method` is not specified.
 
@@ -195,7 +209,7 @@ These are the available config options for making requests. Only the `url` is re
   // `headers` are custom headers to be sent
   headers: {'X-Requested-With': 'XMLHttpRequest'},
 
-  // `param` are the URL parameters to be sent with the request
+  // `params` are the URL parameters to be sent with the request
   params: {
     ID: 12345
   },
@@ -243,11 +257,20 @@ These are the available config options for making requests. Only the `url` is re
   xsrfCookieName: 'XSRF-TOKEN', // default
 
   // `xsrfHeaderName` is the name of the http header that carries the xsrf token value
-  xsrfHeaderName: 'X-XSRF-TOKEN' // default
+  xsrfHeaderName: 'X-XSRF-TOKEN', // default
+
+  // `progress` allows handling of progress events for 'POST' and 'PUT uploads'
+  // as well as 'GET' downloads
+  progress: function(progressEvent) {
+    // Do whatever you want with the native progress event
+  },
+  
+  // `maxContentLength` defines the max size of the http response content allowed
+  maxContentLength: 2000
 }
 ```
 
-## Response API
+## Response Schema
 
 The response for a request contains the following information.
 
@@ -396,7 +419,7 @@ If your environment doesn't support ES6 Promises, you can [polyfill](https://git
 axios includes a [TypeScript](http://typescriptlang.org) definition.
 ```typescript
 /// <reference path="axios.d.ts" />
-import axios = require('axios');
+import * as axios from 'axios';
 axios.get('/user?ID=12345');
 ```
 

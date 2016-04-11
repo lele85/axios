@@ -1,5 +1,3 @@
-var axios = require('../../index');
-
 describe('instance', function () {
   beforeEach(function () {
     jasmine.Ajax.install();
@@ -12,31 +10,23 @@ describe('instance', function () {
   it('should make an http request', function (done) {
     var instance = axios.create();
 
-    instance.request({
-      url: '/foo'
-    });
+    instance.get('/foo');
 
-    setTimeout(function () {
-      request = jasmine.Ajax.requests.mostRecent();
-
+    getAjaxRequest().then(function (request) {
       expect(request.url).toBe('/foo');
       done();
-    }, 0);
+    });
   });
 
   it('should use instance options', function (done) {
     var instance = axios.create({ timeout: 1000 });
 
-    instance.request({
-      url: '/foo'
-    });
+    instance.get('/foo');
 
-    setTimeout(function () {
-      request = jasmine.Ajax.requests.mostRecent();
-
+    getAjaxRequest().then(function (request) {
       expect(request.timeout).toBe(1000);
       done();
-    }, 0);
+    });
   });
 
   it('should have interceptors on the instance', function (done) {
@@ -52,15 +42,11 @@ describe('instance', function () {
     });
 
     var response;
-    instance.request({
-      url: '/foo'
-    }).then(function (res) {
+    instance.get('/foo').then(function (res) {
       response = res;
     });
 
-    setTimeout(function () {
-      request = jasmine.Ajax.requests.mostRecent();
-
+    getAjaxRequest().then(function (request) {
       request.respondWith({
         status: 200
       });
@@ -70,6 +56,6 @@ describe('instance', function () {
         expect(response.config.bar).toEqual(true);
         done();
       });
-    }, 0);
+    });
   });
 });

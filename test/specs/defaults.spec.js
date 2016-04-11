@@ -1,19 +1,16 @@
-var axios = require('../../index');
 var defaults = require('../../lib/defaults');
 var utils = require('../../lib/utils');
 
 describe('defaults', function () {
-  var __defaults;
   var XSRF_COOKIE_NAME = 'CUSTOM-XSRF-TOKEN';
 
   beforeEach(function () {
     jasmine.Ajax.install();
-    __defaults = axios.defaults;
   });
 
   afterEach(function () {
     jasmine.Ajax.uninstall();
-    axios.defaults = __defaults;
+    delete axios.defaults.baseURL;
     document.cookie = XSRF_COOKIE_NAME + '=;expires=' + new Date(Date.now() - 86400000).toGMTString();
   });
 
@@ -37,50 +34,37 @@ describe('defaults', function () {
   });
 
   it('should use global defaults config', function (done) {
-    var request;
+    axios('/foo');
 
-    axios({ url: '/foo' });
-
-    setTimeout(function () {
-      request = jasmine.Ajax.requests.mostRecent();
-
+    getAjaxRequest().then(function (request) {
       expect(request.url).toBe('/foo');
       done();
-    }, 0);
+    });
   });
 
   it('should use modified defaults config', function (done) {
-    var request;
     axios.defaults.baseURL = 'http://example.com/';
 
-    axios({ url: '/foo' });
+    axios('/foo');
 
-    setTimeout(function () {
-      request = jasmine.Ajax.requests.mostRecent();
-
+    getAjaxRequest().then(function (request) {
       expect(request.url).toBe('http://example.com/foo');
       done();
-    }, 0);
+    });
   });
 
   it('should use request config', function (done) {
-    var request;
-
-    axios({
-      url: '/foo',
+    axios('/foo', {
       baseURL: 'http://www.example.com'
     });
 
-    setTimeout(function () {
-      request = jasmine.Ajax.requests.mostRecent();
-
+    getAjaxRequest().then(function (request) {
       expect(request.url).toBe('http://www.example.com/foo');
       done();
-    }, 0);
+    });
   });
 
   it('should use default config for custom instance', function (done) {
-    var request;
     var instance = axios.create({
       xsrfCookieName: XSRF_COOKIE_NAME,
       xsrfHeaderName: 'X-CUSTOM-XSRF-TOKEN'
@@ -89,16 +73,13 @@ describe('defaults', function () {
 
     instance.get('/foo');
 
-    setTimeout(function () {
-      request = jasmine.Ajax.requests.mostRecent();
-
+    getAjaxRequest().then(function (request) {
       expect(request.requestHeaders[instance.defaults.xsrfHeaderName]).toEqual('foobarbaz');
       done();
-    }, 0);
+    });
   });
 
   it('should use header config', function (done) {
-    var request;
     var instance = axios.create({
       headers: {
         common: {
@@ -120,9 +101,7 @@ describe('defaults', function () {
       }
     });
 
-    setTimeout(function () {
-      request = jasmine.Ajax.requests.mostRecent();
-
+    getAjaxRequest().then(function (request) {
       expect(request.requestHeaders).toEqual(
         utils.merge(defaults.headers.common, {
           'X-COMMON-HEADER': 'commonHeaderValue',
@@ -132,7 +111,7 @@ describe('defaults', function () {
         })
       );
       done();
-    }, 0);
+    });
   });
 
 });
