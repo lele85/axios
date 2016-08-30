@@ -7,6 +7,28 @@ describe('instance', function () {
     jasmine.Ajax.uninstall();
   });
 
+  it('should have the same methods as default instance', function () {
+    var instance = axios.create();
+
+    for (var prop in axios) {
+      if (['Axios', 'create', 'all', 'spread', 'default'].indexOf(prop) > -1) {
+        continue;
+      }
+      expect(typeof instance[prop]).toBe(typeof axios[prop]);
+    }
+  });
+
+  it('should make an http request without verb helper', function (done) {
+    var instance = axios.create();
+
+    instance('/foo');
+
+    getAjaxRequest().then(function (request) {
+      expect(request.url).toBe('/foo');
+      done();
+    });
+  });
+
   it('should make an http request', function (done) {
     var instance = axios.create();
 
@@ -27,6 +49,15 @@ describe('instance', function () {
       expect(request.timeout).toBe(1000);
       done();
     });
+  });
+
+  it('should have defaults.headers', function () {
+    var instance = axios.create({
+      baseURL: 'https://api.example.com'
+    });
+
+    expect(typeof instance.defaults.headers, 'object');
+    expect(typeof instance.defaults.headers.common, 'object');
   });
 
   it('should have interceptors on the instance', function (done) {

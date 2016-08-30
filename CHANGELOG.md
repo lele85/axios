@@ -1,5 +1,56 @@
 # Changelog
 
+### 0.14.0 (Aug 27, 2016)
+
+- Updating TypeScript definitions ([#419](https://github.com/mzabriskie/axios/pull/419))
+- Adding support for `http_proxy` and `https_proxy` environment variables ([#366](https://github.com/mzabriskie/axios/pull/366))
+- Replacing `agent` option with `httpAgent` and `httpsAgent` ([#387](https://github.com/mzabriskie/axios/pull/387))
+- Splitting `progress` event handlers into `onUploadProgress` and `onDownloadProgress` ([#423](https://github.com/mzabriskie/axios/pull/423))
+- Fixing issue with `auth` config option and `Authorization` header ([#397](https://github.com/mzabriskie/axios/pull/397))
+- Don't set XSRF header if `xsrfCookieName` is `null` ([#406](https://github.com/mzabriskie/axios/pull/406))
+
+### 0.13.1 (Jul 16, 2016)
+
+- Fixing issue with response data not being transformed on error ([#378](https://github.com/mzabriskie/axios/issues/378))
+
+### 0.13.0 (Jul 13, 2016)
+
+- Improved error handling ([#345](https://github.com/mzabriskie/axios/pull/345))
+- Fixing issue with `withCredentials` not being overwritten ([#343](https://github.com/mzabriskie/axios/issues/343))
+- Fixing regression with request transformer being called before request interceptor ([#352](https://github.com/mzabriskie/axios/issues/352))
+- Fixing custom instance defaults ([#341](https://github.com/mzabriskie/axios/issues/341))
+- Fixing instances created from `axios.create` to have same API as default axios ([#217](https://github.com/mzabriskie/axios/issues/217))
+- Response transformer now invoked in dispatcher not adapter ([10eb238](https://github.com/mzabriskie/axios/commit/10eb23865101f9347570552c04e9d6211376e25e))
+- Request adapters now return a `Promise` ([157efd5](https://github.com/mzabriskie/axios/commit/157efd5615890301824e3121cc6c9d2f9b21f94a))
+
+### 0.12.0 (May 31, 2016)
+
+- Adding support for `URLSearchParams` ([#317](https://github.com/mzabriskie/axios/pull/317))
+- Adding `maxRedirects` option ([#307](https://github.com/mzabriskie/axios/pull/307))
+
+### 0.11.1 (May 17, 2016)
+
+- Fixing IE CORS support ([#313](https://github.com/mzabriskie/axios/pull/313))
+- Fixing detection of `FormData` ([#325](https://github.com/mzabriskie/axios/pull/325))
+- Adding `Axios` class to exports ([#321](https://github.com/mzabriskie/axios/pull/321))
+
+### 0.11.0 (Apr 26, 2016)
+
+- Adding support for Stream with HTTP adapter ([#296](https://github.com/mzabriskie/axios/pull/296))
+- Adding support for custom HTTP status code error ranges ([#308](https://github.com/mzabriskie/axios/pull/308))
+- Fixing issue with ArrayBuffer ([#299](https://github.com/mzabriskie/axios/pull/299))
+
+### 0.10.0 (Apr 20, 2016)
+
+- Fixing issue with some requests sending `undefined` instead of `null` ([#250](https://github.com/mzabriskie/axios/pull/250))
+- Fixing basic auth for HTTP adapter ([#252](https://github.com/mzabriskie/axios/pull/252))
+- Fixing request timeout for XHR adapter ([#227](https://github.com/mzabriskie/axios/pull/227))
+- Fixing IE8 support by using `onreadystatechange` instead of `onload` ([#249](https://github.com/mzabriskie/axios/pull/249))
+- Fixing IE9 cross domain requests ([#251](https://github.com/mzabriskie/axios/pull/251))
+- Adding `maxContentLength` option ([#275](https://github.com/mzabriskie/axios/pull/275))
+- Fixing XHR support for WebWorker environment ([#279](https://github.com/mzabriskie/axios/pull/279))
+- Adding request instance to response ([#200](https://github.com/mzabriskie/axios/pull/200))
+
 ### 0.9.1 (Jan 24, 2016)
 
 - Improving handling of request timeout in node ([#124](https://github.com/mzabriskie/axios/issues/124))

@@ -46,6 +46,10 @@ describe('requests', function () {
     var finish = function () {
       expect(resolveSpy).not.toHaveBeenCalled();
       expect(rejectSpy).toHaveBeenCalled();
+      var reason = rejectSpy.calls.first().args[0];
+      expect(reason instanceof Error).toBe(true);
+      expect(reason.config.method).toBe('get');
+      expect(reason.config.url).toBe('http://thisisnotaserver');
 
       done();
     };
@@ -53,6 +57,92 @@ describe('requests', function () {
     axios('http://thisisnotaserver')
       .then(resolveSpy, rejectSpy)
       .then(finish, finish);
+  });
+
+  it('should reject when validateStatus returns false', function (done) {
+    var resolveSpy = jasmine.createSpy('resolve');
+    var rejectSpy = jasmine.createSpy('reject');
+
+    axios('/foo', {
+      validateStatus: function (status) {
+        return status !== 500;
+      }
+    }).then(resolveSpy)
+      .catch(rejectSpy)
+      .then(function () {
+        expect(resolveSpy).not.toHaveBeenCalled();
+        expect(rejectSpy).toHaveBeenCalled();
+        var reason = rejectSpy.calls.first().args[0];
+        expect(reason instanceof Error).toBe(true);
+        expect(reason.message).toBe('Request failed with status code 500');
+        expect(reason.config.method).toBe('get');
+        expect(reason.config.url).toBe('/foo');
+        expect(reason.response.status).toBe(500);
+
+        done();
+      });
+
+    getAjaxRequest().then(function (request) {
+      request.respondWith({
+        status: 500
+      });
+    });
+  });
+
+  it('should resolve when validateStatus returns true', function (done) {
+    var resolveSpy = jasmine.createSpy('resolve');
+    var rejectSpy = jasmine.createSpy('reject');
+
+    axios('/foo', {
+      validateStatus: function (status) {
+        return status === 500;
+      }
+    }).then(resolveSpy)
+      .catch(rejectSpy)
+      .then(function () {
+        expect(resolveSpy).toHaveBeenCalled();
+        expect(rejectSpy).not.toHaveBeenCalled();
+        done();
+      });
+
+    getAjaxRequest().then(function (request) {
+      request.respondWith({
+        status: 500
+      });
+    });
+  });
+
+  // https://github.com/mzabriskie/axios/issues/378
+  it('should return JSON when rejecting', function (done) {
+    var response;
+
+    axios('/api/account/signup', {
+      username: null,
+      password: null
+    }, {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .catch(function (error) {
+      response = error.response;
+    });
+
+    getAjaxRequest().then(function (request) {
+      request.respondWith({
+        status: 400,
+        statusText: 'Bad Request',
+        responseText: '{"error": "BAD USERNAME", "code": 1}'
+      });
+
+      setTimeout(function () {
+        expect(typeof response.data).toEqual('object');
+        expect(response.data.error).toEqual('BAD USERNAME');
+        expect(response.data.code).toEqual(1);
+        done();
+      });
+    });
   });
 
   it('should make cross domian http request', function (done) {
@@ -71,7 +161,7 @@ describe('requests', function () {
           'Content-Type': 'application/json'
         }
       });
-      
+
       setTimeout(function () {
         expect(response.data.foo).toEqual('bar');
         expect(response.status).toEqual(200);
@@ -164,7 +254,7 @@ describe('requests', function () {
     axios.post('/foo', input.buffer);
 
     getAjaxRequest().then(function (request) {
-      var output = new Int8Array(request.params.buffer);
+      var output = new Int8Array(request.params);
       expect(output.length).toEqual(2);
       expect(output[0]).toEqual(1);
       expect(output[1]).toEqual(2);
@@ -186,7 +276,7 @@ describe('requests', function () {
     axios.post('/foo', input);
 
     getAjaxRequest().then(function (request) {
-      var output = new Int8Array(request.params.buffer);
+      var output = new Int8Array(request.params);
       expect(output.length).toEqual(2);
       expect(output[0]).toEqual(1);
       expect(output[1]).toEqual(2);
@@ -200,7 +290,7 @@ describe('requests', function () {
       done();
       return;
     }
-    
+
     var response;
 
     function str2ab(str) {
@@ -231,4 +321,17 @@ describe('requests', function () {
     });
   });
 
+  it('should support URLSearchParams', function (done) {
+    var params = new URLSearchParams();
+    params.append('param1', 'value1');
+    params.append('param2', 'value2');
+
+    axios.post('/foo', params);
+
+    getAjaxRequest().then(function (request) {
+      expect(request.requestHeaders['Content-Type']).toBe('application/x-www-form-urlencoded;charset=utf-8');
+      expect(request.params).toBe('param1=value1&param2=value2');
+      done();
+    });
+  });
 });
